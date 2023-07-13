@@ -18,6 +18,7 @@ find_package(tf2_geometry_msgs REQUIRED)
 find_package(moveit REQUIRED)
 find_package(moveit_visual_tools REQUIRED)
 find_package(moveit_ros_planning_interface REQUIRED)
+find_package(behaviortree_cpp REQUIRED)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
