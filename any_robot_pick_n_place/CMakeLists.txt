@@ -20,6 +20,25 @@ find_package(moveit_visual_tools REQUIRED)
 find_package(moveit_ros_planning_interface REQUIRED)
 find_package(behaviortree_cpp REQUIRED)
 
+set(dependencies
+  rclcpp
+  rclcpp_action
+  rclcpp_components
+  sensor_msgs
+  control_msgs
+  geometry_msgs
+  tf2_ros
+  tf2_geometry_msgs
+  moveit
+  moveit_visual_tools
+  moveit_ros_planning_interface
+  behaviortree_cpp
+)
+
+install(DIRECTORY include/
+  DESTINATION include/
+)
+
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   # the following line skips the linter which checks for copyrights

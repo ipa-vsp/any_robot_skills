@@ -28,15 +28,19 @@
 struct Parameters
 {
     std::string arm_group_name;
-    geometry_msgs::msg::Pose object_pose;
+    std::string planning_frame;
+    std::string moveing_link;
+    geometry_msgs::msg::Pose pick_pose;
     geometry_msgs::msg::Pose place_pose;
 
     void load(const rclcpp::Node::SharePtr &node)
     {
         node->get_parameter("arm_group_name", arm_group_name);
+        node->get_parameter("planning_frame", planning_frame);
+        node->get_parameter("moveing_link", moveing_link);
 
         size_t errors = 0;
-        errors += !rosparam_shortcuts::get(node, "object_pose", object_pose);
+        errors += !rosparam_shortcuts::get(node, "object_pose", pick_pose);
         errors += !rosparam_shortcuts::get(node, "place_pose", place_pose);
         rosparam_shortcuts::shutdownIfError(errors);
     }
