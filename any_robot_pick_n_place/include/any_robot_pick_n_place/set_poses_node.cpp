@@ -55,7 +55,7 @@ class SetPosesNode : public BT::SyncActionNode
                 return BT::NodeStatus::FAILURE;
             }
 
-            RCLCPP_INFO(node_->get_logger(), "Setting poses for %s", getInput<std::string>("Operation").value().c_str());         
+            RCLCPP_INFO(node_->get_logger(), "Setting poses for %s", getInput<std::string>("Operation").value().c_str());
             geometry_msgs::msg::Pose pose;
             if (getInput<std::string>("Operation").value() == "Pick")
             {
