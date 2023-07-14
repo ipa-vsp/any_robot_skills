@@ -97,14 +97,12 @@ class SetPosesNode : public BT::SyncActionNode
             return BT::NodeStatus::FAILURE;
         }
 
-
         Eigen::Isometry3d target_pose;
         tf2::fromMsg(pose, target_pose);
         // From planning frame to model frame
         target_pose = transform * target_pose;
         pose = tf2::toMsg(target_pose);
         RCLCPP_INFO(node_->get_logger(), "Pose in planning frame: %s", geometry_msgs::msg::to_yaml(pose).c_str());
-
 
         if (!state->setFromIK(jmg, target_pose, planning_end_effector_frame_))
         {
@@ -118,7 +116,6 @@ class SetPosesNode : public BT::SyncActionNode
         collision_request.contacts = false;
         collision_request.cost = false;
         collision_request.distance = false;
-
 
         {
             auto planning_scene_monitor =
