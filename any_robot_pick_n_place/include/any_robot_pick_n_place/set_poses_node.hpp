@@ -85,21 +85,6 @@ class SetPosesNode : public BT::SyncActionNode
             return BT::NodeStatus::FAILURE;
         }
 
-        RCLCPP_INFO(node_->get_logger(), "Setting poses for %s", getInput<std::string>("Operation").value().c_str());
-        geometry_msgs::msg::Pose pose;
-        if (getInput<std::string>("Operation").value() == "Pick")
-        {
-            pose = pick_pose_;
-        }
-        else if (getInput<std::string>("Operation").value() == "Place")
-        {
-            pose = place_pose_;
-        }
-        else
-        {
-            RCLCPP_ERROR(node_->get_logger(), "Operation not set. Please set the Operation to Pick or Place");
-            return BT::NodeStatus::FAILURE;
-        }
         auto state = moveit_cpp_->getCurrentState();
         auto jmg = state->getJointModelGroup(planning_goup_name_);
         bool found_ik = false;
@@ -108,7 +93,7 @@ class SetPosesNode : public BT::SyncActionNode
         if (!found_ik)
         {
             RCLCPP_ERROR(node_->get_logger(), "Could not find transform from %s to %s", planning_base_frame_.c_str(),
-                        jmg->getLinkModelNames().back().c_str());
+                         jmg->getLinkModelNames().back().c_str());
             return BT::NodeStatus::FAILURE;
         }
 
@@ -141,7 +126,7 @@ class SetPosesNode : public BT::SyncActionNode
             planning_scene_monitor->checkCollision(collision_request, collision_result, *state);
         }
 
-        if(collision_result.collision)
+        if (collision_result.collision)
         {
             RCLCPP_ERROR(node_->get_logger(), "Collision detected");
             return BT::NodeStatus::FAILURE;
