@@ -103,7 +103,7 @@ class SetPosesNode : public BT::SyncActionNode
         auto state = moveit_cpp_->getCurrentState();
         auto jmg = state->getJointModelGroup(planning_goup_name_);
         bool found_ik = false;
-        
+
         auto transform = state->getFrameTransform(planning_base_frame_, &found_ik);
         if (!found_ik)
         {
@@ -111,7 +111,7 @@ class SetPosesNode : public BT::SyncActionNode
                         jmg->getLinkModelNames().back().c_str());
             return BT::NodeStatus::FAILURE;
         }
-    
+
 
         Eigen::Isometry3d target_pose;
         tf2::fromMsg(pose, target_pose);
@@ -119,7 +119,7 @@ class SetPosesNode : public BT::SyncActionNode
         target_pose = transform * target_pose;
         pose = tf2::toMsg(target_pose);
         RCLCPP_INFO(node_->get_logger(), "Pose in planning frame: %s", geometry_msgs::msg::to_yaml(pose).c_str());
-       
+
 
         if (!state->setFromIK(jmg, target_pose, planning_end_effector_frame_))
         {
@@ -133,7 +133,7 @@ class SetPosesNode : public BT::SyncActionNode
         collision_request.contacts = false;
         collision_request.cost = false;
         collision_request.distance = false;
-        
+
 
         {
             auto planning_scene_monitor =

@@ -48,7 +48,7 @@ class PlanMotionNode : public BT::SyncActionNode
                 RCLCPP_ERROR(node_->get_logger(), "Operation not set. Please set the Operation to Pick or Place");
                 return BT::NodeStatus::FAILURE;
             }
-            
+
             RCLCPP_INFO(node_->get_logger(), "Planning %s", getInput<std::string>("Operation").value().c_str());
 
             if(getInput<moveit::core::RobotStatePtr>("start_state").has_value())
@@ -61,7 +61,7 @@ class PlanMotionNode : public BT::SyncActionNode
             }
 
             auto plan = planning_component_->plan();
-            
+
             if(!plan)
             {
                 auto error_code = plan.error_code;
