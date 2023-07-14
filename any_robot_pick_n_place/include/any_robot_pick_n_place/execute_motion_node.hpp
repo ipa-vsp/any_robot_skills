@@ -38,7 +38,7 @@ class ExecuteMotionNode: public BT::StatefulActionNode
         BT::NodeStatus onStart() override
         {
             RCLCPP_INFO(node_->get_logger(), "Executing %s", getInput<std::string>("Operation").value().c_str());
-            
+
             if(!getInput<robot_trajectory::RobotTrajectoryPtr>("trajectory").has_value())
             {
                 RCLCPP_ERROR(node_->get_logger(), "Trajectory not set. Please set the Trajectory to be executed. Exception thrown: %s", getInput<robot_trajectory::RobotTrajectoryPtr>("trajectory").error().c_str());
