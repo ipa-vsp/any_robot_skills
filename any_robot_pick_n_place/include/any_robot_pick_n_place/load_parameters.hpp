@@ -33,7 +33,7 @@ struct Parameters
     geometry_msgs::msg::Pose pick_pose;
     geometry_msgs::msg::Pose place_pose;
 
-    void load(const rclcpp::Node::SharePtr &node)
+    void load(const rclcpp::Node::SharedPtr &node)
     {
         node->get_parameter("arm_group_name", arm_group_name);
         node->get_parameter("planning_frame", planning_frame);
