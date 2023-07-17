@@ -80,7 +80,7 @@ class ExecuteMotionNode : public BT::StatefulActionNode
         std::future_status status = exe_future_.wait_for(std::chrono::milliseconds(1));
         switch (status)
         {
-        case std::future_status::ready:
+            case std::future_status::ready:
             {
                 auto result = exe_future_.get();
                 if (result == moveit_controller_manager::ExecutionStatus::SUCCEEDED)
