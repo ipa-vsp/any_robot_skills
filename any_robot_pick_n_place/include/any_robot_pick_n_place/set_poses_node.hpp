@@ -129,7 +129,7 @@ class SetPosesNode : public BT::SyncActionNode
             return BT::NodeStatus::FAILURE;
         }
 
-            setOutput("robot_state", state);
+        setOutput("robot_state", state);
         return BT::NodeStatus::SUCCESS;
     }
 };

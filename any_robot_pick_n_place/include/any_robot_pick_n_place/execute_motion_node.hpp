@@ -80,32 +80,32 @@ class ExecuteMotionNode : public BT::StatefulActionNode
         std::future_status status = exe_future_.wait_for(std::chrono::milliseconds(1));
         switch (status)
         {
-        case std::future_status::ready:
-        {
-            auto result = exe_future_.get();
-            if (result == moveit_controller_manager::ExecutionStatus::SUCCEEDED)
+            case std::future_status::ready:
             {
-                RCLCPP_INFO(node_->get_logger(), "Execution succeeded");
-                return BT::NodeStatus::SUCCESS;
+                auto result = exe_future_.get();
+                if (result == moveit_controller_manager::ExecutionStatus::SUCCEEDED)
+                {
+                    RCLCPP_INFO(node_->get_logger(), "Execution succeeded");
+                    return BT::NodeStatus::SUCCESS;
+                }
+                else
+                {
+                    RCLCPP_ERROR(node_->get_logger(), "Execution failed");
+                    return BT::NodeStatus::FAILURE;
+                }
             }
-            else
+            case std::future_status::timeout:
             {
-                RCLCPP_ERROR(node_->get_logger(), "Execution failed");
+                RCLCPP_INFO(node_->get_logger(), "Execution running");
+                return BT::NodeStatus::RUNNING;
+            }
+            case std::future_status::deferred:
+            {
+                RCLCPP_ERROR(node_->get_logger(), "Execution deferred");
                 return BT::NodeStatus::FAILURE;
             }
-        }
-        case std::future_status::timeout:
-        {
-            RCLCPP_INFO(node_->get_logger(), "Execution running");
-            return BT::NodeStatus::RUNNING;
-        }
-        case std::future_status::deferred:
-        {
-            RCLCPP_ERROR(node_->get_logger(), "Execution deferred");
-            return BT::NodeStatus::FAILURE;
-        }
-        default:
-            return BT::NodeStatus::RUNNING;
+            default:
+                return BT::NodeStatus::RUNNING;
         }
     }
 
