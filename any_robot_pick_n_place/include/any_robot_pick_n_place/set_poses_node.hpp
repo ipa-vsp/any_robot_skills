@@ -18,7 +18,7 @@
 #include "geometry_msgs/msg/pose.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "tf2_eigen/tf2_eigen.hpp"
-#include "tf2_geometry_msgs/tf2_geometry_msgs.h"
+#include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
 
 #include "moveit/moveit_cpp/moveit_cpp.h"
 #include "moveit/moveit_cpp/planning_component.h"

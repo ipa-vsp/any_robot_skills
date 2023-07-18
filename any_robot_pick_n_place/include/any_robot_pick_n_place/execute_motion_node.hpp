@@ -69,10 +69,10 @@ class ExecuteMotionNode : public BT::StatefulActionNode
                                  [this, &trajectory]()
                                  {
                                      auto result = this->moveit_cpp_->execute(planning_goup_name_, trajectory);
-                                     RCLCPP_INFO(node_->get_logger(), "Execution result: %d", result);
+                                     RCLCPP_INFO(node_->get_logger(), "Execution result: %s", std::to_string(result).c_str());
                                      return result;
                                  });
-        BT::NodeStatus::RUNNING;
+        return BT::NodeStatus::RUNNING;
     }
 
     BT::NodeStatus onRunning() override
