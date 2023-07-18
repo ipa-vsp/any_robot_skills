@@ -65,7 +65,7 @@ class SetPosesNode : public BT::SyncActionNode
 
     BT::NodeStatus tick() override
     {
-        if(!getInput<std::string>("description").has_value())
+        if (!getInput<std::string>("description").has_value())
         {
             RCLCPP_INFO(node_->get_logger(), "%s", getInput<std::string>("description").value().c_str());
         }
