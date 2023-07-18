@@ -3,7 +3,7 @@
   <BehaviorTree ID="MainTree">
     <Sequence name="root_sequence">
       <SetPose description="Pick Pre Pose"
-               offset_z="0.15"
+               offset_z="0.05"
                operation="Pick"
                robot_state="{pick_pre_pose_state}"/>
       <SetPose description="Pick Pose"
@@ -11,11 +11,11 @@
                operation="Pick"
                robot_state="{pick_pose_state}"/>
       <SetPose description="Pick post pose"
-               offset_z="0.15"
+               offset_z="0.05"
                operation="Pick"
                robot_state="{pick_post_pose_state}"/>
       <SetPose description="Place pre post"
-               offset_z="0.15"
+               offset_z="0.05"
                operation="Place"
                robot_state="{place_pre_pose_state}"/>
       <SetPose description="Place pose"
@@ -23,13 +23,11 @@
                operation="Place"
                robot_state="{place_pose_state}"/>
       <SetPose description="Place post pose"
-               offset_z="0.15"
+               offset_z="0.05"
                operation="Place"
                robot_state="{place_post_pose_state}"/>
       <PlanMotion description="Plan pick pre pose"
                   goal_state="{pick_pre_pose_state}"
-                  start_state=""
-                  next_start_state=""
                   trajectory="{planed_pick_pre_pose}"/>
       <PlanMotion description="Plan pick pose"
                   goal_state="{pick_pose_state}"

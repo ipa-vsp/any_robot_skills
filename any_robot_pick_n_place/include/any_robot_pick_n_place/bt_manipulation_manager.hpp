@@ -45,8 +45,10 @@ class BTManipulationManager
     BTManipulationManager(rclcpp::Node::SharedPtr node, const Parameters &param) : node_(node), param_(param)
     {
         // param_.load(node_);
+        RCLCPP_INFO(node_->get_logger(), "Initializing Behaviour tree Manipulation Manager");
         moveit_cpp_ = std::make_shared<moveit_cpp::MoveItCpp>(node_);
         moveit_cpp_->getPlanningSceneMonitor()->providePlanningSceneService();
+        RCLCPP_INFO(node_->get_logger(), "MoveItCpp successfully initialized");
         planning_component_ = std::make_shared<moveit_cpp::PlanningComponent>(param_.arm_group_name, moveit_cpp_);
         factory_ = std::make_shared<BT::BehaviorTreeFactory>();
         node_->declare_parameter("behavior_tree_file",
@@ -56,6 +58,7 @@ class BTManipulationManager
 
     void start_bt()
     {
+        RCLCPP_INFO(node_->get_logger(), "Starting Behaviour tree Manipulation Manager");
         config_ = std::make_shared<BT::NodeConfiguration>();
         config_->blackboard = BT::Blackboard::create();
         config_->blackboard->set<rclcpp::Node::SharedPtr>("node", node_);
@@ -77,7 +80,7 @@ class BTManipulationManager
 
         try
         {
-            factory_->registerBuilder<SetPosesNode>("SetPoses", set_pose_builder);
+            factory_->registerBuilder<SetPosesNode>("SetPose", set_pose_builder);
             factory_->registerBuilder<PlanMotionNode>("PlanMotion", plan_motion_builder);
             factory_->registerBuilder<ExecuteMotionNode>("ExecuteMotion", execute_motion_builder);
         }

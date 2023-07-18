@@ -1,10 +1,10 @@
-simple_pick_n_place_demo:
+simple_pick_n_place:
   ros__parameters:
     arm_group_name: "arm"
     planning_frame: "world"
     moveing_link: "prbt_tool0"
-    pick_pose: [-0.17, -0.1, 1.05, 1.0, 0.0, 0.0, 0.0]
-    place_pose: [-0.17, 0.16, 1.05, 1.0, 0.0, 0.0, 0.0]
+    pick_pose: [-0.0, -0.1, 1.0, 1.5, -0.000, 3.14]
+    place_pose: [-0.0, 0.1, 1.0, -3.14, -0.000, 1.557]
     compute_path_moveitcpp_skill:
       planning_pipeline: "pilz_industrial_motion_planner"
       planner_id: "PTP"

@@ -119,7 +119,7 @@ class SetPosesNode : public BT::SyncActionNode
         if (!state->setFromIK(jmg, target_pose, planning_end_effector_frame_))
         {
             RCLCPP_ERROR(node_->get_logger(), "Could not find IK solution");
-            return BT::NodeStatus::FAILURE;
+            // return BT::NodeStatus::FAILURE;
         }
 
         // Collition check
