@@ -37,21 +37,25 @@ set(dependencies
   behaviortree_cpp
 )
 
-add_executable(pick_n_place_node src/main.cpp)
-target_include_directories(pick_n_place_node PUBLIC
+add_executable(simple_pick_n_place_demo src/main.cpp)
+target_include_directories(simple_pick_n_place_demo PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
 )
-target_compile_features(pick_n_place_node PUBLIC cxx_std_17)
-ament_target_dependencies(pick_n_place_node ${dependencies})
+target_compile_features(simple_pick_n_place_demo PUBLIC cxx_std_17)
+ament_target_dependencies(simple_pick_n_place_demo ${dependencies})
 
-install(TARGETS pick_n_place_node
+install(TARGETS simple_pick_n_place_demo
   EXPORT export_${PROJECT_NAME}
   DESTINATION lib/${PROJECT_NAME}
 )
 
 install(DIRECTORY include/
   DESTINATION include/
+)
+
+install(DIRECTORY launch config
+  DESTINATION share/${PROJECT_NAME}
 )
 
 if(BUILD_TESTING)

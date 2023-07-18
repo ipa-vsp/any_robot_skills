@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include "any_robot_pick_n_place/bt_manipulation_manager.hpp"
+#include "any_robot_pick_n_place/load_parameters.hpp"
 #include "rclcpp/rclcpp.hpp"
 
 int main(int argc, char **argv)
@@ -30,8 +31,12 @@ int main(int argc, char **argv)
             executor.spin();
             executor.remove_node(node->get_node_base_interface());
         });
+    
+    Parameters param;
+    param.load(node);
+
     rclcpp::sleep_for(std::chrono::seconds(1));
-    BTManipulationManager manager(node);
+    BTManipulationManager manager(node, param);
     manager.start_bt();
     rclcpp::sleep_for(std::chrono::seconds(1));
     rclcpp::shutdown();

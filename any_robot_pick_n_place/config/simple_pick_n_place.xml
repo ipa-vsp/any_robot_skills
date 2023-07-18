@@ -26,16 +26,6 @@
                offset_z="0.15"
                operation="Place"
                robot_state="{place_post_pose_state}"/>
-      <Repeat num_cycles="10">
-        <Sequence>
-          <ExecuteMotion trajectory="{planed_pick_pre_pose}"/>
-          <ExecuteMotion trajectory="{planed_pick_pose}"/>
-          <ExecuteMotion trajectory="{planed_pick_post_pose}"/>
-          <ExecuteMotion trajectory="{planed_place_pre_state}"/>
-          <ExecuteMotion trajectory="{planed_place_pose}"/>
-          <ExecuteMotion trajectory="{planed_place_post_pose}"/>
-        </Sequence>
-      </Repeat>
       <PlanMotion description="Plan pick pre pose"
                   goal_state="{pick_pre_pose_state}"
                   start_state=""
@@ -66,6 +56,16 @@
                   start_state=""
                   next_start_state=""
                   trajectory="{planed_place_post_pose}"/>
+      <Repeat num_cycles="10">
+        <Sequence>
+          <ExecuteMotion trajectory="{planed_pick_pre_pose}"/>
+          <ExecuteMotion trajectory="{planed_pick_pose}"/>
+          <ExecuteMotion trajectory="{planed_pick_post_pose}"/>
+          <ExecuteMotion trajectory="{planed_place_pre_state}"/>
+          <ExecuteMotion trajectory="{planed_place_pose}"/>
+          <ExecuteMotion trajectory="{planed_place_post_pose}"/>
+        </Sequence>
+      </Repeat>
     </Sequence>
   </BehaviorTree>
 

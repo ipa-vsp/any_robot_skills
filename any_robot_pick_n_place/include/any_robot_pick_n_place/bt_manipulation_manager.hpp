@@ -42,16 +42,16 @@ class BTManipulationManager
     Parameters param_;
 
   public:
-    BTManipulationManager(rclcpp::Node::SharedPtr node) : node_(node)
+    BTManipulationManager(rclcpp::Node::SharedPtr node, const Parameters &param) : node_(node), param_(param)
     {
-        param_.load(node_);
+        // param_.load(node_);
         moveit_cpp_ = std::make_shared<moveit_cpp::MoveItCpp>(node_);
         moveit_cpp_->getPlanningSceneMonitor()->providePlanningSceneService();
         planning_component_ = std::make_shared<moveit_cpp::PlanningComponent>(param_.arm_group_name, moveit_cpp_);
         factory_ = std::make_shared<BT::BehaviorTreeFactory>();
         node_->declare_parameter("behavior_tree_file",
                                  ament_index_cpp::get_package_share_directory("any_robot_pick_n_place") +
-                                     "/config/bt_manipulation.xml");
+                                     "/config/simple_pick_n_place.xml");
     }
 
     void start_bt()
