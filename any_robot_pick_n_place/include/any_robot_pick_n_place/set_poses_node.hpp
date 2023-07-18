@@ -56,33 +56,45 @@ class SetPosesNode : public BT::SyncActionNode
     {
         const char *op_description = "Pick or Place";
         return {
-            BT::InputPort<std::string>("Operation", op_description),
+            BT::InputPort<std::string>("description"),
+            BT::InputPort<std::string>("operation", op_description),
+            BT::InputPort<double>("offset_z", "Offset in z direction"),
             BT::OutputPort<moveit::core::RobotStatePtr>("robot_state"),
         };
     }
 
     BT::NodeStatus tick() override
     {
-        if (!getInput<std::string>("Operation").has_value())
+        if(!getInput<std::string>("description").has_value())
         {
-            RCLCPP_ERROR(node_->get_logger(), "Operation not set. Please set the Operation to Pick or Place");
+            RCLCPP_INFO(node_->get_logger(), "%s", getInput<std::string>("description").value().c_str());
+        }
+
+        if (!getInput<std::string>("operation").has_value())
+        {
+            RCLCPP_ERROR(node_->get_logger(), "operation not set. Please set the operation to Pick or Place");
             return BT::NodeStatus::FAILURE;
         }
 
-        RCLCPP_INFO(node_->get_logger(), "Setting poses for %s", getInput<std::string>("Operation").value().c_str());
+        RCLCPP_INFO(node_->get_logger(), "Setting poses for %s", getInput<std::string>("operation").value().c_str());
         geometry_msgs::msg::Pose pose;
-        if (getInput<std::string>("Operation").value() == "Pick")
+        if (getInput<std::string>("operation").value() == "Pick")
         {
             pose = pick_pose_;
         }
-        else if (getInput<std::string>("Operation").value() == "Place")
+        else if (getInput<std::string>("operation").value() == "Place")
         {
             pose = place_pose_;
         }
         else
         {
-            RCLCPP_ERROR(node_->get_logger(), "Operation not set. Please set the Operation to Pick or Place");
+            RCLCPP_ERROR(node_->get_logger(), "Operation not set. Please set the operation to Pick or Place");
             return BT::NodeStatus::FAILURE;
+        }
+
+        if (getInput<double>("offset_z").has_value())
+        {
+            pose.position.z -= getInput<double>("offset_z").value();
         }
 
         auto state = moveit_cpp_->getCurrentState();
