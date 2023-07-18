@@ -8,7 +8,10 @@ from moveit_configs_utils import MoveItConfigsBuilder
 def generate_launch_description():
     moveit_config = (
         MoveItConfigsBuilder("prbt_cell", package_name="prbt_cell_moveit_config")
-        .robot_description(file_path=get_package_share_directory("prbt_cell_description") + "/urdf/prbt_cell.urdf.xacro")
+        .robot_description(
+            file_path=get_package_share_directory("prbt_cell_description")
+            + "/urdf/prbt_cell.urdf.xacro"
+        )
         .moveit_cpp(
             file_path=get_package_share_directory("any_robot_pick_n_place")
             + "/config/moveitcpp.yaml"

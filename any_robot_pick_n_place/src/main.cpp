@@ -31,7 +31,7 @@ int main(int argc, char **argv)
             executor.spin();
             executor.remove_node(node->get_node_base_interface());
         });
-    
+
     Parameters param;
     param.load(node);
 
