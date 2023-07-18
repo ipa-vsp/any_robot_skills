@@ -65,13 +65,14 @@ class ExecuteMotionNode : public BT::StatefulActionNode
         robot_trajectory::RobotTrajectoryPtr trajectory =
             getInput<robot_trajectory::RobotTrajectoryPtr>("trajectory").value();
 
-        exe_future_ = std::async(std::launch::async,
-                                 [this, &trajectory]()
-                                 {
-                                     auto result = this->moveit_cpp_->execute(planning_goup_name_, trajectory);
-                                     RCLCPP_INFO(node_->get_logger(), "Execution result: %s", std::to_string(result).c_str());
-                                     return result;
-                                 });
+        exe_future_ =
+            std::async(std::launch::async,
+                       [this, &trajectory]()
+                       {
+                           auto result = this->moveit_cpp_->execute(planning_goup_name_, trajectory);
+                           RCLCPP_INFO(node_->get_logger(), "Execution result: %s", std::to_string(result).c_str());
+                           return result;
+                       });
         return BT::NodeStatus::RUNNING;
     }
 
