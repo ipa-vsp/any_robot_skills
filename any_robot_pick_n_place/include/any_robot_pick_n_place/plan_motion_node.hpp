@@ -68,7 +68,7 @@ class PlanMotionNode : public BT::SyncActionNode
         {
             planning_component_->setStartStateToCurrentState();
         }
-        
+
         if (getInput<moveit::core::RobotStatePtr>("goal_state").has_value())
         {
             planning_component_->setGoal(*getInput<moveit::core::RobotStatePtr>("goal_state").value());
@@ -86,7 +86,8 @@ class PlanMotionNode : public BT::SyncActionNode
 
         setOutput<robot_trajectory::RobotTrajectoryPtr>("trajectory", plan.trajectory);
         setOutput<moveit::core::RobotStatePtr>("next_start_state", plan.trajectory->getLastWayPointPtr());
-        RCLCPP_INFO(node_->get_logger(), "Planning succeeded for: %s", getInput<std::string>("description").value().c_str());
+        RCLCPP_INFO(node_->get_logger(), "Planning succeeded for: %s",
+                    getInput<std::string>("description").value().c_str());
         return BT::NodeStatus::SUCCESS;
     }
 };
