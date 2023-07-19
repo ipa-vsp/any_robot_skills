@@ -45,14 +45,17 @@ class ExecuteMotionNode : public BT::StatefulActionNode
     {
         const char *op_description = "Execute Action Description";
         return {
-            BT::InputPort<std::string>("Operation", op_description),
+            BT::InputPort<std::string>("description", op_description),
             BT::InputPort<robot_trajectory::RobotTrajectoryPtr>("trajectory"),
         };
     }
 
     BT::NodeStatus onStart() override
     {
-        RCLCPP_INFO(node_->get_logger(), "Executing %s", getInput<std::string>("Operation").value().c_str());
+        if(getInput<std::string>("description").has_value())
+        {
+            RCLCPP_INFO(node_->get_logger(), "%s", getInput<std::string>("description").value().c_str());
+        }
 
         if (!getInput<robot_trajectory::RobotTrajectoryPtr>("trajectory").has_value())
         {
@@ -97,7 +100,7 @@ class ExecuteMotionNode : public BT::StatefulActionNode
             }
             case std::future_status::timeout:
             {
-                RCLCPP_INFO(node_->get_logger(), "Execution running");
+                // RCLCPP_INFO(node_->get_logger(), "Execution running");
                 return BT::NodeStatus::RUNNING;
             }
             case std::future_status::deferred:

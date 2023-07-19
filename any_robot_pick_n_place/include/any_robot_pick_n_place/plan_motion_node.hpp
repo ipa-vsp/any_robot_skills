@@ -55,7 +55,6 @@ class PlanMotionNode : public BT::SyncActionNode
 
     BT::NodeStatus tick() override
     {
-        RCLCPP_INFO(node_->get_logger(), "Planning Motion");
         if (getInput<std::string>("description").has_value())
         {
             RCLCPP_INFO(node_->get_logger(), "Planning %s", getInput<std::string>("description").value().c_str());
@@ -63,17 +62,15 @@ class PlanMotionNode : public BT::SyncActionNode
 
         if (getInput<moveit::core::RobotStatePtr>("start_state").has_value())
         {
-            RCLCPP_INFO(node_->get_logger(), "Setting start state");
             planning_component_->setStartState(*getInput<moveit::core::RobotStatePtr>("start_state").value());
         }
         else
         {
-            RCLCPP_INFO(node_->get_logger(), "Setting start state to current state");
             planning_component_->setStartStateToCurrentState();
         }
+        
         if (getInput<moveit::core::RobotStatePtr>("goal_state").has_value())
         {
-            RCLCPP_INFO(node_->get_logger(), "Setting goal state");
             planning_component_->setGoal(*getInput<moveit::core::RobotStatePtr>("goal_state").value());
         }
 
@@ -89,7 +86,7 @@ class PlanMotionNode : public BT::SyncActionNode
 
         setOutput<robot_trajectory::RobotTrajectoryPtr>("trajectory", plan.trajectory);
         setOutput<moveit::core::RobotStatePtr>("next_start_state", plan.trajectory->getLastWayPointPtr());
-
+        RCLCPP_INFO(node_->get_logger(), "Planning succeeded for: %s", getInput<std::string>("description").value().c_str());
         return BT::NodeStatus::SUCCESS;
     }
 };
