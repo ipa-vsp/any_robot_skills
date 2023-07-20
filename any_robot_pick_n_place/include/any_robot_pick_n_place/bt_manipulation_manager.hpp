@@ -27,6 +27,7 @@
 #include <ament_index_cpp/get_package_share_directory.hpp>
 
 #include "behaviortree_cpp/bt_factory.h"
+#include "behaviortree_cpp/loggers/groot2_publisher.h"
 
 class BTManipulationManager
 {
@@ -92,6 +93,8 @@ class BTManipulationManager
 
         std::string behavior_tree_file = node_->get_parameter("behavior_tree_file").as_string();
         tree_ = std::make_shared<BT::Tree>(factory_->createTreeFromFile(behavior_tree_file, config_->blackboard));
+
+        BT::Groot2Publisher groot_publisher(*tree_, 1667);
 
         auto status = tree_->tickOnce();
 
