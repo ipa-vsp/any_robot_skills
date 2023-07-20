@@ -28,30 +28,53 @@
                robot_state="{place_post_pose_state}"/>
       <PlanMotion description="Plan pick pre pose"
                   goal_state="{pick_pre_pose_state}"
+                  start_state=""
+                  next_start_state="{next_pick_pre_pose_state}"
                   trajectory="{planed_pick_pre_pose}"/>
       <PlanMotion description="Plan pick pose"
                   goal_state="{pick_pose_state}"
+                  start_state="{next_pick_pre_pose_state}"
+                  next_start_state="{next_pick_pose_state}"
                   trajectory="{planed_pick_pose}"/>
       <PlanMotion description="Plan pick post pose"
                   goal_state="{pick_post_pose_state}"
+                  start_state="{next_pick_pose_state}"
+                  next_start_state="{next_pick_post_pose_state}"
                   trajectory="{planed_pick_post_pose}"/>
       <PlanMotion description="Plan place pre pose"
                   goal_state="{place_pre_pose_state}"
+                  start_state="{next_pick_post_pose_state}"
+                  next_start_state="{next_place_pre_pose_state}"
                   trajectory="{planed_place_pre_state}"/>
       <PlanMotion description="Plan place pose"
                   goal_state="{place_pose_state}"
+                  start_state="{next_place_pre_pose_state}"
+                  next_start_state="{next_place_pose_state}"
                   trajectory="{planed_place_pose}"/>
       <PlanMotion description="Plan place post place"
                   goal_state="{place_post_pose_state}"
+                  start_state="{next_place_pose_state}"
+                  next_start_state="{next_place_post_pose_state}"
                   trajectory="{planed_place_post_pose}"/>
       <Repeat num_cycles="10">
         <Sequence>
-          <ExecuteMotion description="Execute Pick pre pose" trajectory="{planed_pick_pre_pose}"/>
-          <ExecuteMotion description="Execute Pick pose" trajectory="{planed_pick_pose}"/>
-          <ExecuteMotion description="Execute Pick post pose" trajectory="{planed_pick_post_pose}"/>
-          <ExecuteMotion description="Execute Place pre pose" trajectory="{planed_place_pre_state}"/>
-          <ExecuteMotion description="Execute Place pose" trajectory="{planed_place_pose}"/>
-          <ExecuteMotion description="Execute Place post pose" trajectory="{planed_place_post_pose}"/>
+          <ExecuteMotion description="Execute Pick pre pose"
+                         trajectory="{planed_pick_pre_pose}"/>
+          <ExecuteMotion description="Execute Pick pose"
+                         trajectory="{planed_pick_pose}"/>
+          <ExecuteMotion description="Execute Pick post pose"
+                         trajectory="{planed_pick_post_pose}"/>
+          <ExecuteMotion description="Execute Place pre pose"
+                         trajectory="{planed_place_pre_state}"/>
+          <ExecuteMotion description="Execute Place pose"
+                         trajectory="{planed_place_pose}"/>
+          <ExecuteMotion description="Execute Place post pose"
+                         trajectory="{planed_place_post_pose}"/>
+          <PlanMotion description="Plan pick pre pose"
+                      goal_state="{pick_pre_pose_state}"
+                      start_state="{next_place_post_pose_state}"
+                      next_start_state="{next_pick_pre_pose_state}"
+                      trajectory="{planed_pick_pre_pose}"/>
         </Sequence>
       </Repeat>
     </Sequence>

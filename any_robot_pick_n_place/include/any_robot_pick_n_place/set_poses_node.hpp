@@ -94,7 +94,7 @@ class SetPosesNode : public BT::SyncActionNode
 
         if (getInput<double>("offset_z").has_value())
         {
-            pose.position.z -= getInput<double>("offset_z").value();
+            pose.position.z += getInput<double>("offset_z").value();
         }
 
         auto state = moveit_cpp_->getCurrentState();
