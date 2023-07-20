@@ -46,7 +46,7 @@ class PlanMotionNode : public BT::SyncActionNode
     static BT::PortsList providedPorts()
     {
         const char *op_description = "Plan Action Description";
-        return {BT::InputPort<std::string>("Operation", op_description),
+        return {BT::InputPort<std::string>("description", op_description),
                 BT::InputPort<moveit::core::RobotStatePtr>("start_state"),
                 BT::InputPort<moveit::core::RobotStatePtr>("goal_state"),
                 BT::OutputPort<robot_trajectory::RobotTrajectoryPtr>("trajectory"),
@@ -55,19 +55,20 @@ class PlanMotionNode : public BT::SyncActionNode
 
     BT::NodeStatus tick() override
     {
-        if (!getInput<std::string>("Operation").has_value())
+        if (getInput<std::string>("description").has_value())
         {
-            RCLCPP_ERROR(node_->get_logger(), "Operation not set. Please set the Operation to Pick or Place");
-            return BT::NodeStatus::FAILURE;
+            RCLCPP_INFO(node_->get_logger(), "Planning %s", getInput<std::string>("description").value().c_str());
         }
-
-        RCLCPP_INFO(node_->get_logger(), "Planning %s", getInput<std::string>("Operation").value().c_str());
 
         if (getInput<moveit::core::RobotStatePtr>("start_state").has_value())
         {
-            RCLCPP_INFO(node_->get_logger(), "Planning %s", getInput<std::string>("Operation").value().c_str());
             planning_component_->setStartState(*getInput<moveit::core::RobotStatePtr>("start_state").value());
         }
+        else
+        {
+            planning_component_->setStartStateToCurrentState();
+        }
+
         if (getInput<moveit::core::RobotStatePtr>("goal_state").has_value())
         {
             planning_component_->setGoal(*getInput<moveit::core::RobotStatePtr>("goal_state").value());
@@ -85,7 +86,8 @@ class PlanMotionNode : public BT::SyncActionNode
 
         setOutput<robot_trajectory::RobotTrajectoryPtr>("trajectory", plan.trajectory);
         setOutput<moveit::core::RobotStatePtr>("next_start_state", plan.trajectory->getLastWayPointPtr());
-
+        RCLCPP_INFO(node_->get_logger(), "Planning succeeded for: %s",
+                    getInput<std::string>("description").value().c_str());
         return BT::NodeStatus::SUCCESS;
     }
 };

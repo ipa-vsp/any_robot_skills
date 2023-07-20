@@ -35,12 +35,16 @@ struct Parameters
 
     void load(const rclcpp::Node::SharedPtr &node)
     {
+        RCLCPP_INFO(node->get_logger(), "Loading parameters");
         node->get_parameter("arm_group_name", arm_group_name);
         node->get_parameter("planning_frame", planning_frame);
         node->get_parameter("moveing_link", moveing_link);
 
+        RCLCPP_INFO(node->get_logger(), "Loaded parameters arm_group_name: %s, planning_frame: %s, moveing_link: %s",
+                    arm_group_name.c_str(), planning_frame.c_str(), moveing_link.c_str());
+
         size_t errors = 0;
-        errors += !rosparam_shortcuts::get(node, "object_pose", pick_pose);
+        errors += !rosparam_shortcuts::get(node, "pick_pose", pick_pose);
         errors += !rosparam_shortcuts::get(node, "place_pose", place_pose);
         rosparam_shortcuts::shutdownIfError(errors);
     }

@@ -16,6 +16,7 @@ find_package(geometry_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(moveit REQUIRED)
+find_package(rosparam_shortcuts REQUIRED)
 find_package(moveit_visual_tools REQUIRED)
 find_package(moveit_ros_planning_interface REQUIRED)
 find_package(behaviortree_cpp REQUIRED)
@@ -29,14 +30,32 @@ set(dependencies
   geometry_msgs
   tf2_ros
   tf2_geometry_msgs
+  rosparam_shortcuts
   moveit
   moveit_visual_tools
   moveit_ros_planning_interface
   behaviortree_cpp
 )
 
+add_executable(simple_pick_n_place_demo src/main.cpp)
+target_include_directories(simple_pick_n_place_demo PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+target_compile_features(simple_pick_n_place_demo PUBLIC cxx_std_17)
+ament_target_dependencies(simple_pick_n_place_demo ${dependencies})
+
+install(TARGETS simple_pick_n_place_demo
+  EXPORT export_${PROJECT_NAME}
+  DESTINATION lib/${PROJECT_NAME}
+)
+
 install(DIRECTORY include/
   DESTINATION include/
+)
+
+install(DIRECTORY launch config
+  DESTINATION share/${PROJECT_NAME}
 )
 
 if(BUILD_TESTING)

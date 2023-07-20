@@ -1,0 +1,17 @@
+simple_pick_n_place:
+  ros__parameters:
+    arm_group_name: "arm"
+    planning_frame: "world"
+    moveing_link: "prbt_tool0"
+    # home_pose: [-0.022, -0.010, 1.147, -3.140, 0.000, 1.567]
+    pick_pose: [-0.144, -0.121, 1.148, -3.14, 0.00, -1.57]
+    place_pose: [-0.144, 0.121, 1.148, -3.14, 0.00, -1.57]
+    compute_path_moveitcpp_skill:
+      planning_pipeline: "pilz_industrial_motion_planner"
+      planner_id: "PTP"
+      planning_attempts: 10
+      step_size: 0.005
+      min_fraction: 0.50
+      max_acceleration_scaling_factor: 0.3
+      max_velocity_scaling_factor: 0.1
+      planning_time: 1.0

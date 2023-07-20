@@ -1,3 +1,17 @@
+// Copyright 2023 Vishnuprasad Prachandabhanu
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 #ifndef BT_MANIPULATION_MANAGER_HPP
 #define BT_MANIPULATION_MANAGER_HPP
 
@@ -13,6 +27,7 @@
 #include <ament_index_cpp/get_package_share_directory.hpp>
 
 #include "behaviortree_cpp/bt_factory.h"
+#include "behaviortree_cpp/loggers/groot2_publisher.h"
 
 class BTManipulationManager
 {
@@ -28,20 +43,23 @@ class BTManipulationManager
     Parameters param_;
 
   public:
-    BTManipulationManager(rclcpp::Node::SharedPtr node) : node_(node)
+    BTManipulationManager(rclcpp::Node::SharedPtr node, const Parameters &param) : node_(node), param_(param)
     {
-        param_.load(node_);
+        // param_.load(node_);
+        RCLCPP_INFO(node_->get_logger(), "Initializing Behaviour tree Manipulation Manager");
         moveit_cpp_ = std::make_shared<moveit_cpp::MoveItCpp>(node_);
         moveit_cpp_->getPlanningSceneMonitor()->providePlanningSceneService();
+        RCLCPP_INFO(node_->get_logger(), "MoveItCpp successfully initialized");
         planning_component_ = std::make_shared<moveit_cpp::PlanningComponent>(param_.arm_group_name, moveit_cpp_);
         factory_ = std::make_shared<BT::BehaviorTreeFactory>();
         node_->declare_parameter("behavior_tree_file",
                                  ament_index_cpp::get_package_share_directory("any_robot_pick_n_place") +
-                                     "/config/bt_manipulation.xml");
+                                     "/config/simple_pick_n_place.xml");
     }
 
     void start_bt()
     {
+        RCLCPP_INFO(node_->get_logger(), "Starting Behaviour tree Manipulation Manager");
         config_ = std::make_shared<BT::NodeConfiguration>();
         config_->blackboard = BT::Blackboard::create();
         config_->blackboard->set<rclcpp::Node::SharedPtr>("node", node_);
@@ -63,7 +81,7 @@ class BTManipulationManager
 
         try
         {
-            factory_->registerBuilder<SetPosesNode>("SetPoses", set_pose_builder);
+            factory_->registerBuilder<SetPosesNode>("SetPose", set_pose_builder);
             factory_->registerBuilder<PlanMotionNode>("PlanMotion", plan_motion_builder);
             factory_->registerBuilder<ExecuteMotionNode>("ExecuteMotion", execute_motion_builder);
         }
@@ -75,6 +93,8 @@ class BTManipulationManager
 
         std::string behavior_tree_file = node_->get_parameter("behavior_tree_file").as_string();
         tree_ = std::make_shared<BT::Tree>(factory_->createTreeFromFile(behavior_tree_file, config_->blackboard));
+
+        BT::Groot2Publisher groot_publisher(*tree_, 1667);
 
         auto status = tree_->tickOnce();
 
