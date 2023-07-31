@@ -15,12 +15,12 @@
 #ifndef GRIPPER_NODE_HPP
 #define GRIPPER_NODE_HPP
 
-#include "geometry_msgs/msg/pose.hpp"
 #include "control_msgs/action/gripper_command.hpp"
+#include "geometry_msgs/msg/pose.hpp"
 #include "moveit/moveit_cpp/moveit_cpp.h"
 #include "moveit/moveit_cpp/planning_component.h"
-#include "rclcpp_action/rclcpp_action.hpp"
 #include "rclcpp/rclcpp.hpp"
+#include "rclcpp_action/rclcpp_action.hpp"
 
 #include <behaviortree_cpp/bt_factory.h>
 
@@ -30,8 +30,7 @@ class CommandGripper : public BT::StatefulActionNode
     using GripperCommand = control_msgs::action::GripperCommand;
     using GoalHandleGripperCommand = rclcpp_action::ClientGoalHandle<GripperCommand>;
 
-    CommandGripper(const std::string &name, const BT::NodeConfiguration &config)
-        : BT::StatefulActionNode(name, config)
+    CommandGripper(const std::string &name, const BT::NodeConfiguration &config) : BT::StatefulActionNode(name, config)
     {
         node_ = config.blackboard->get<rclcpp::Node::SharedPtr>("node");
         gripper_action_ = config.blackboard->get<std::string>("gripper_action");
@@ -42,10 +41,8 @@ class CommandGripper : public BT::StatefulActionNode
     static BT::PortsList providedPorts()
     {
         const char *op_description = "Gripper Command";
-        return {
-            BT::InputPort<std::string>("description", op_description),
-            BT::InputPort<bool>("is_open", "true: open, false: close")
-        };
+        return {BT::InputPort<std::string>("description", op_description),
+                BT::InputPort<bool>("is_open", "true: open, false: close")};
     }
 
     BT::NodeStatus onStart() override
@@ -57,13 +54,14 @@ class CommandGripper : public BT::StatefulActionNode
 
         if (!getInput<bool>("is_open").has_value())
         {
-            RCLCPP_ERROR(node_->get_logger(), "Gripper command is not set. Exception thrown: %s", getInput<bool>("is_open").error().c_str());
+            RCLCPP_ERROR(node_->get_logger(), "Gripper command is not set. Exception thrown: %s",
+                         getInput<bool>("is_open").error().c_str());
             return BT::NodeStatus::FAILURE;
         }
 
         bool is_open = getInput<bool>("is_open").value();
 
-        if(!client_->wait_for_action_server(std::chrono::seconds(5)))
+        if (!client_->wait_for_action_server(std::chrono::seconds(5)))
         {
             RCLCPP_ERROR(node_->get_logger(), "Can not connect to the action server: %s", gripper_action_.c_str());
             BT::NodeStatus::FAILURE;
@@ -108,19 +106,16 @@ class CommandGripper : public BT::StatefulActionNode
         }
     }
 
-    void onHalted() override
-    {
-        RCLCPP_INFO(node_->get_logger(), "Execution halted");
-    }
+    void onHalted() override { RCLCPP_INFO(node_->get_logger(), "Execution halted"); }
 
-protected:
+  protected:
     rclcpp::Node::SharedPtr node_;
     rclcpp_action::Client<GripperCommand>::SharedPtr client_;
     std::string gripper_action_;
 
     std::shared_future<std::shared_ptr<GoalHandleGripperCommand>> exec_future;
 
-private:
+  private:
     void feedback_callback(GoalHandleGripperCommand::SharedPtr,
                            const std::shared_ptr<const GripperCommand::Feedback> feedback)
     {
