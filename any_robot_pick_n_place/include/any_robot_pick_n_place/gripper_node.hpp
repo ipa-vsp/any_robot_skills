@@ -49,7 +49,7 @@ class CommandGripper : public BT::StatefulActionNode
     {
         if (getInput<std::string>("description").has_value())
         {
-            RCLCPP_INFO(node_->get_logger(), "%s", getInput<std::string>("description").value().c_str());
+            RCLCPP_INFO(node_->get_logger(), "Gripper: %s", getInput<std::string>("description").value().c_str());
         }
 
         if (!getInput<bool>("is_open").has_value())
@@ -83,7 +83,7 @@ class CommandGripper : public BT::StatefulActionNode
 
     BT::NodeStatus onRunning() override
     {
-        std::future_status status = exec_future.wait_for(std::chrono::milliseconds(1));
+        std::future_status status = exec_future.wait_for(std::chrono::milliseconds(100));
         switch (status)
         {
             case std::future_status::ready:

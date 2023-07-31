@@ -20,6 +20,7 @@
 #include "rclcpp/rclcpp.hpp"
 
 #include "any_robot_pick_n_place/execute_motion_node.hpp"
+#include "any_robot_pick_n_place/gripper_node.hpp"
 #include "any_robot_pick_n_place/load_parameters.hpp"
 #include "any_robot_pick_n_place/plan_motion_node.hpp"
 #include "any_robot_pick_n_place/set_poses_node.hpp"
@@ -79,12 +80,15 @@ class BTManipulationManager
         { return std::make_unique<PlanMotionNode>(name, config); };
         BT::NodeBuilder execute_motion_builder = [](const std::string &name, const BT::NodeConfiguration &config)
         { return std::make_unique<ExecuteMotionNode>(name, config); };
+        BT::NodeBuilder command_gripper_builder = [](const std::string &name, const BT::NodeConfiguration &config)
+        { return std::make_unique<CommandGripper>(name, config); };
 
         try
         {
             factory_->registerBuilder<SetPosesNode>("SetPose", set_pose_builder);
             factory_->registerBuilder<PlanMotionNode>("PlanMotion", plan_motion_builder);
             factory_->registerBuilder<ExecuteMotionNode>("ExecuteMotion", execute_motion_builder);
+            factory_->registerBuilder<CommandGripper>("CommandGripper", command_gripper_builder);
         }
         catch (BT::BehaviorTreeException &e)
         {
