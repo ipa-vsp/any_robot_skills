@@ -30,6 +30,7 @@ struct Parameters
     std::string arm_group_name;
     std::string planning_frame;
     std::string moveing_link;
+    std::string gripper_action;
     geometry_msgs::msg::Pose pick_pose;
     geometry_msgs::msg::Pose place_pose;
 
@@ -39,6 +40,7 @@ struct Parameters
         node->get_parameter("arm_group_name", arm_group_name);
         node->get_parameter("planning_frame", planning_frame);
         node->get_parameter("moveing_link", moveing_link);
+        node->get_parameter("gripper_action", gripper_action);
 
         RCLCPP_INFO(node->get_logger(), "Loaded parameters arm_group_name: %s, planning_frame: %s, moveing_link: %s",
                     arm_group_name.c_str(), planning_frame.c_str(), moveing_link.c_str());

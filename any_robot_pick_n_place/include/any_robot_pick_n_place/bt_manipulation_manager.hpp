@@ -68,6 +68,7 @@ class BTManipulationManager
         config_->blackboard->set<std::string>("planning_group_name", param_.arm_group_name);
         config_->blackboard->set<std::string>("planning_base_frame", param_.planning_frame);
         config_->blackboard->set<std::string>("planning_end_effector_frame", param_.moveing_link);
+        config_->blackboard->set<std::string>("gripper_action", param_.gripper_action);
 
         config_->blackboard->set<geometry_msgs::msg::Pose>("pick_pose", param_.pick_pose);
         config_->blackboard->set<geometry_msgs::msg::Pose>("place_pose", param_.place_pose);
