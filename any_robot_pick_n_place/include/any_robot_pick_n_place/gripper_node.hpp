@@ -90,7 +90,7 @@ class CommandGripper : public BT::StatefulActionNode
 
     BT::NodeStatus onRunning() override
     {
-        if(success_)
+        if (success_)
         {
             return BT::NodeStatus::SUCCESS;
         }
