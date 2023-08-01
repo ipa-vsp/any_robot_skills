@@ -36,6 +36,10 @@ class CommandGripper : public BT::StatefulActionNode
         gripper_action_ = config.blackboard->get<std::string>("gripper_action");
 
         client_ = rclcpp_action::create_client<GripperCommand>(node_, gripper_action_);
+
+        goal_options_.goal_response_callback = std::bind(&CommandGripper::goal_response_callback, this, std::placeholders::_1);
+        goal_options_.feedback_callback = std::bind(&CommandGripper::feedback_callback, this, std::placeholders::_1, std::placeholders::_2);
+        goal_options_.result_callback = std::bind(&CommandGripper::result_callback, this, std::placeholders::_1);
     }
 
     static BT::PortsList providedPorts()
@@ -61,10 +65,10 @@ class CommandGripper : public BT::StatefulActionNode
 
         bool is_open = getInput<bool>("is_open").value();
 
-        if (!client_->wait_for_action_server(std::chrono::seconds(5)))
+        if (!client_->wait_for_action_server(std::chrono::seconds(5)) && rclcpp::ok())
         {
             RCLCPP_ERROR(node_->get_logger(), "Can not connect to the action server: %s", gripper_action_.c_str());
-            BT::NodeStatus::FAILURE;
+            return BT::NodeStatus::FAILURE;
         }
 
         auto target = control_msgs::action::GripperCommand::Goal();
@@ -77,19 +81,31 @@ class CommandGripper : public BT::StatefulActionNode
             target.command.position = 1.0;
         }
 
-        exec_future = this->client_->async_send_goal(target);
+        exec_future = this->client_->async_send_goal(target, goal_options_);
+        future_gripper_result_ = promise_.get_future();
         return BT::NodeStatus::RUNNING;
     }
 
     BT::NodeStatus onRunning() override
     {
-        std::future_status status = exec_future.wait_for(std::chrono::milliseconds(100));
+        std::future_status status = exec_future.wait_for(std::chrono::seconds(10));
         switch (status)
         {
             case std::future_status::ready:
             {
-                RCLCPP_INFO(node_->get_logger(), "Execution succeeded");
-                return BT::NodeStatus::SUCCESS;
+                auto goal_handle = exec_future.get();
+                if(goal_handle->is_result_aware())
+                {
+                    auto res = future_gripper_result_.get();
+                    if(res)
+                    {
+                        RCLCPP_INFO(node_->get_logger(), "Gripper action complete");
+                        return BT::NodeStatus::SUCCESS;
+                    } else {
+                        RCLCPP_ERROR(node_->get_logger(), "Gripper action failed");
+                        return BT::NodeStatus::FAILURE;
+                    }
+                }
             }
             case std::future_status::timeout:
             {
@@ -111,7 +127,11 @@ class CommandGripper : public BT::StatefulActionNode
   protected:
     rclcpp::Node::SharedPtr node_;
     rclcpp_action::Client<GripperCommand>::SharedPtr client_;
+    rclcpp_action::Client<GripperCommand>::SendGoalOptions goal_options_;
     std::string gripper_action_;
+
+    std::promise<bool> promise_;
+    std::shared_future<bool> future_gripper_result_;
 
     std::shared_future<std::shared_ptr<GoalHandleGripperCommand>> exec_future;
 
@@ -142,15 +162,19 @@ class CommandGripper : public BT::StatefulActionNode
         {
             case rclcpp_action::ResultCode::SUCCEEDED:
                 RCLCPP_INFO(node_->get_logger(), "Goal succeeded");
+                promise_.set_value(true);
                 break;
             case rclcpp_action::ResultCode::ABORTED:
                 RCLCPP_ERROR(node_->get_logger(), "Goal was aborted");
+                promise_.set_value(false);
                 return;
             case rclcpp_action::ResultCode::CANCELED:
                 RCLCPP_ERROR(node_->get_logger(), "Goal was canceled");
+                promise_.set_value(false);
                 return;
             default:
                 RCLCPP_ERROR(node_->get_logger(), "Unknown result code");
+                promise_.set_value(false);
                 return;
         }
         RCLCPP_INFO(node_->get_logger(), "Result received");
