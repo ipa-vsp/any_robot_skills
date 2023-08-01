@@ -104,7 +104,12 @@ class CommandGripper : public BT::StatefulActionNode
         }
     }
 
-    void onHalted() override { RCLCPP_INFO(node_->get_logger(), "Execution halted"); }
+    void onHalted() override 
+    { 
+        RCLCPP_INFO(node_->get_logger(), "Execution halted");
+        this->client_->async_cancel_all_goals();
+        failed_.store(false); 
+    }
 
   protected:
     rclcpp::Node::SharedPtr node_;
