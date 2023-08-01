@@ -37,8 +37,10 @@ class CommandGripper : public BT::StatefulActionNode
 
         client_ = rclcpp_action::create_client<GripperCommand>(node_, gripper_action_);
 
-        goal_options_.goal_response_callback = std::bind(&CommandGripper::goal_response_callback, this, std::placeholders::_1);
-        goal_options_.feedback_callback = std::bind(&CommandGripper::feedback_callback, this, std::placeholders::_1, std::placeholders::_2);
+        goal_options_.goal_response_callback =
+            std::bind(&CommandGripper::goal_response_callback, this, std::placeholders::_1);
+        goal_options_.feedback_callback =
+            std::bind(&CommandGripper::feedback_callback, this, std::placeholders::_1, std::placeholders::_2);
         goal_options_.result_callback = std::bind(&CommandGripper::result_callback, this, std::placeholders::_1);
     }
 
@@ -94,14 +96,16 @@ class CommandGripper : public BT::StatefulActionNode
             case std::future_status::ready:
             {
                 auto goal_handle = exec_future.get();
-                if(goal_handle->is_result_aware())
+                if (goal_handle->is_result_aware())
                 {
                     auto res = future_gripper_result_.get();
-                    if(res)
+                    if (res)
                     {
                         RCLCPP_INFO(node_->get_logger(), "Gripper action complete");
                         return BT::NodeStatus::SUCCESS;
-                    } else {
+                    }
+                    else
+                    {
                         RCLCPP_ERROR(node_->get_logger(), "Gripper action failed");
                         return BT::NodeStatus::FAILURE;
                     }
