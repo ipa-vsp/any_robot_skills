@@ -82,47 +82,25 @@ class CommandGripper : public BT::StatefulActionNode
         {
             target.command.position = 1.0;
         }
-
-        exec_future = this->client_->async_send_goal(target, goal_options_);
-        future_gripper_result_ = promise_.get_future();
+        success_.store(false);
+        failed_.store(false);
+        this->client_->async_send_goal(target, goal_options_);
         return BT::NodeStatus::RUNNING;
     }
 
     BT::NodeStatus onRunning() override
     {
-        std::future_status status = exec_future.wait_for(std::chrono::seconds(10));
-        switch (status)
+        if(success_)
         {
-            case std::future_status::ready:
-            {
-                auto goal_handle = exec_future.get();
-                if (goal_handle->is_result_aware())
-                {
-                    auto res = future_gripper_result_.get();
-                    if (res)
-                    {
-                        RCLCPP_INFO(node_->get_logger(), "Gripper action complete");
-                        return BT::NodeStatus::SUCCESS;
-                    }
-                    else
-                    {
-                        RCLCPP_ERROR(node_->get_logger(), "Gripper action failed");
-                        return BT::NodeStatus::FAILURE;
-                    }
-                }
-            }
-            case std::future_status::timeout:
-            {
-                // RCLCPP_INFO(node_->get_logger(), "Execution running");
-                return BT::NodeStatus::RUNNING;
-            }
-            case std::future_status::deferred:
-            {
-                RCLCPP_ERROR(node_->get_logger(), "Execution deferred");
-                return BT::NodeStatus::FAILURE;
-            }
-            default:
-                return BT::NodeStatus::RUNNING;
+            return BT::NodeStatus::SUCCESS;
+        }
+        else if (failed_)
+        {
+            return BT::NodeStatus::FAILURE;
+        }
+        else
+        {
+            return BT::NodeStatus::RUNNING;
         }
     }
 
@@ -134,10 +112,8 @@ class CommandGripper : public BT::StatefulActionNode
     rclcpp_action::Client<GripperCommand>::SendGoalOptions goal_options_;
     std::string gripper_action_;
 
-    std::promise<bool> promise_;
-    std::shared_future<bool> future_gripper_result_;
-
-    std::shared_future<std::shared_ptr<GoalHandleGripperCommand>> exec_future;
+    std::atomic_bool success_;
+    std::atomic_bool failed_;
 
   private:
     void feedback_callback(GoalHandleGripperCommand::SharedPtr,
@@ -166,22 +142,22 @@ class CommandGripper : public BT::StatefulActionNode
         {
             case rclcpp_action::ResultCode::SUCCEEDED:
                 RCLCPP_INFO(node_->get_logger(), "Goal succeeded");
-                promise_.set_value(true);
+                success_.store(true);
                 break;
             case rclcpp_action::ResultCode::ABORTED:
                 RCLCPP_ERROR(node_->get_logger(), "Goal was aborted");
-                promise_.set_value(false);
+                failed_.store(true);
                 return;
             case rclcpp_action::ResultCode::CANCELED:
                 RCLCPP_ERROR(node_->get_logger(), "Goal was canceled");
-                promise_.set_value(false);
+                failed_.store(true);
                 return;
             default:
                 RCLCPP_ERROR(node_->get_logger(), "Unknown result code");
-                promise_.set_value(false);
+                failed_.store(true);
                 return;
         }
-        RCLCPP_INFO(node_->get_logger(), "Result received");
+        RCLCPP_INFO(node_->get_logger(), "Gripper action result received");
     }
 };
 
