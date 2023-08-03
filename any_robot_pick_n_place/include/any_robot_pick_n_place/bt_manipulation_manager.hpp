@@ -24,6 +24,7 @@
 #include "any_robot_pick_n_place/load_parameters.hpp"
 #include "any_robot_pick_n_place/plan_motion_node.hpp"
 #include "any_robot_pick_n_place/set_poses_node.hpp"
+#include "any_robot_pick_n_place/detect_unique_color_node.hpp"
 
 #include <ament_index_cpp/get_package_share_directory.hpp>
 
