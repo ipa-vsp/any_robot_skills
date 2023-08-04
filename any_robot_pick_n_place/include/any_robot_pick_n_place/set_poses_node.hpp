@@ -33,8 +33,7 @@ class SetPosesNode : public BT::SyncActionNode
     moveit_cpp::MoveItCppPtr moveit_cpp_;
     moveit_cpp::PlanningComponentPtr planning_component_;
     // Parameters params_; Load the parameters at manager node and pass it to this node
-    geometry_msgs::msg::Pose pick_pose_;
-    geometry_msgs::msg::Pose place_pose_;
+    geometry_msgs::msg::Pose pick_pose_, place_pose_, home_pose_;
     std::string planning_goup_name_;
     std::string planning_base_frame_;
     std::string planning_end_effector_frame_;
@@ -47,6 +46,7 @@ class SetPosesNode : public BT::SyncActionNode
         planning_component_ = config.blackboard->get<moveit_cpp::PlanningComponentPtr>("planning_component");
         pick_pose_ = config.blackboard->get<geometry_msgs::msg::Pose>("pick_pose");
         place_pose_ = config.blackboard->get<geometry_msgs::msg::Pose>("place_pose");
+        home_pose_ = config.blackboard->get<geometry_msgs::msg::Pose>("home_pose");
         planning_goup_name_ = config.blackboard->get<std::string>("planning_group_name");
         planning_base_frame_ = config.blackboard->get<std::string>("planning_base_frame");
         planning_end_effector_frame_ = config.blackboard->get<std::string>("planning_end_effector_frame");
@@ -54,7 +54,7 @@ class SetPosesNode : public BT::SyncActionNode
 
     static BT::PortsList providedPorts()
     {
-        const char *op_description = "Pick or Place";
+        const char *op_description = "Pick or Place or Home";
         return {
             BT::InputPort<std::string>("description"),
             BT::InputPort<std::string>("operation", op_description),
@@ -85,6 +85,10 @@ class SetPosesNode : public BT::SyncActionNode
         else if (getInput<std::string>("operation").value() == "Place")
         {
             pose = place_pose_;
+        }
+        else if (getInput<std::string>("operation").value() == "Home")
+        {
+            pose = home_pose_;
         }
         else
         {

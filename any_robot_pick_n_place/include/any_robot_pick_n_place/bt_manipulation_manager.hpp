@@ -19,12 +19,12 @@
 #include "moveit/moveit_cpp/planning_component.h"
 #include "rclcpp/rclcpp.hpp"
 
+// #include "any_robot_pick_n_place/detect_unique_color_node.hpp"
 #include "any_robot_pick_n_place/execute_motion_node.hpp"
 #include "any_robot_pick_n_place/gripper_node.hpp"
 #include "any_robot_pick_n_place/load_parameters.hpp"
 #include "any_robot_pick_n_place/plan_motion_node.hpp"
 #include "any_robot_pick_n_place/set_poses_node.hpp"
-#include "any_robot_pick_n_place/detect_unique_color_node.hpp"
 
 #include <ament_index_cpp/get_package_share_directory.hpp>
 
@@ -74,6 +74,7 @@ class BTManipulationManager
 
         config_->blackboard->set<geometry_msgs::msg::Pose>("pick_pose", param_.pick_pose);
         config_->blackboard->set<geometry_msgs::msg::Pose>("place_pose", param_.place_pose);
+        config_->blackboard->set<geometry_msgs::msg::Pose>("home_pose", param_.home_pose);
 
         BT::NodeBuilder set_pose_builder = [](const std::string &name, const BT::NodeConfiguration &config)
         { return std::make_unique<SetPosesNode>(name, config); };

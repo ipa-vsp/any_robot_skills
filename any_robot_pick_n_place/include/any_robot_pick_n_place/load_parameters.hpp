@@ -33,6 +33,7 @@ struct Parameters
     std::string gripper_action;
     geometry_msgs::msg::Pose pick_pose;
     geometry_msgs::msg::Pose place_pose;
+    geometry_msgs::msg::Pose home_pose;
 
     void load(const rclcpp::Node::SharedPtr &node)
     {
@@ -48,6 +49,7 @@ struct Parameters
         size_t errors = 0;
         errors += !rosparam_shortcuts::get(node, "pick_pose", pick_pose);
         errors += !rosparam_shortcuts::get(node, "place_pose", place_pose);
+        errors += !rosparam_shortcuts::get(node, "home_pose", home_pose);
         rosparam_shortcuts::shutdownIfError(errors);
     }
 };

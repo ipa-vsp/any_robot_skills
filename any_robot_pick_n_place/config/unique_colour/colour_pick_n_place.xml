@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root BTCPP_format="4">
+  <BehaviorTree ID="MainTree">
+    <Sequence name="root_sequence">
+      <SetPose description="Pick Pre Pose"
+               offset_z="0.05"
+               operation="Pick"
+               robot_state="{pick_pre_pose_state}"/>
+      <SetPose description="Pick Pose"
+               offset_z=""
+               operation="Pick"
+               robot_state="{pick_pose_state}"/>
+      <SetPose description="Pick post pose"
+               offset_z="0.05"
+               operation="Pick"
+               robot_state="{pick_post_pose_state}"/>
+      <SetPose description="Place pre post"
+               offset_z="0.05"
+               operation="Place"
+               robot_state="{place_pre_pose_state}"/>
+      <SetPose description="Place pose"
+               offset_z=""
+               operation="Place"
+               robot_state="{place_pose_state}"/>
+      <SetPose description="Place post pose"
+               offset_z="0.05"
+               operation="Place"
+               robot_state="{place_post_pose_state}"/>
+      <PlanMotion description="Plan pick pre pose"
+                  goal_state="{pick_pre_pose_state}"
+                  start_state=""
+                  next_start_state="{next_pick_pre_pose_state}"
+                  trajectory="{planed_pick_pre_pose}"/>
+      <PlanMotion description="Plan pick pose"
+                  goal_state="{pick_pose_state}"
+                  start_state="{next_pick_pre_pose_state}"
+                  next_start_state="{next_pick_pose_state}"
+                  trajectory="{planed_pick_pose}"/>
+      <PlanMotion description="Plan pick post pose"
+                  goal_state="{pick_post_pose_state}"
+                  start_state="{next_pick_pose_state}"
+                  next_start_state="{next_pick_post_pose_state}"
+                  trajectory="{planed_pick_post_pose}"/>
+      <PlanMotion description="Plan place pre pose"
+                  goal_state="{place_pre_pose_state}"
+                  start_state="{next_pick_post_pose_state}"
+                  next_start_state="{next_place_pre_pose_state}"
+                  trajectory="{planed_place_pre_state}"/>
+      <PlanMotion description="Plan place pose"
+                  goal_state="{place_pose_state}"
+                  start_state="{next_place_pre_pose_state}"
+                  next_start_state="{next_place_pose_state}"
+                  trajectory="{planed_place_pose}"/>
+      <PlanMotion description="Plan place post place"
+                  goal_state="{place_post_pose_state}"
+                  start_state="{next_place_pose_state}"
+                  next_start_state="{next_place_post_pose_state}"
+                  trajectory="{planed_place_post_pose}"/>
+      <Repeat num_cycles="10">
+        <Sequence>
+          <ExecuteMotion description="Execute Pick pre pose"
+                         trajectory="{planed_pick_pre_pose}"/>
+          <CommandGripper description="Open"
+                          is_open="true"/>
+          <ExecuteMotion description="Execute Pick pose"
+                         trajectory="{planed_pick_pose}"/>
+          <CommandGripper description="Close"
+                          is_open="false"/>
+          <ExecuteMotion description="Execute Pick post pose"
+                         trajectory="{planed_pick_post_pose}"/>
+          <ExecuteMotion description="Execute Place pre pose"
+                         trajectory="{planed_place_pre_state}"/>
+          <ExecuteMotion description="Execute Place pose"
+                         trajectory="{planed_place_pose}"/>
+          <CommandGripper description="Open"
+                          is_open="true"/>
+          <ExecuteMotion description="Execute Place post pose"
+                         trajectory="{planed_place_post_pose}"/>
+          <PlanMotion description="Plan pick pre pose"
+                      goal_state="{pick_pre_pose_state}"
+                      start_state="{next_place_post_pose_state}"
+                      next_start_state="{next_pick_pre_pose_state}"
+                      trajectory="{planed_pick_pre_pose}"/>
+        </Sequence>
+      </Repeat>
+    </Sequence>
+  </BehaviorTree>
+
+  <!-- Description of Node Models (used by Groot) -->
+  <TreeNodesModel>
+    <Action ID="CommandGripper"
+            editable="true">
+      <input_port name="description"/>
+      <input_port name="is_open"/>
+    </Action>
+    <Action ID="ExecuteMotion"
+            editable="true">
+      <input_port name="description"/>
+      <input_port name="trajectory"/>
+    </Action>
+    <Action ID="PlanMotion"
+            editable="true">
+      <input_port name="description"/>
+      <input_port name="goal_state"/>
+      <input_port name="start_state"/>
+      <output_port name="next_start_state"/>
+      <output_port name="trajectory"/>
+    </Action>
+    <Action ID="SetPose"
+            editable="true">
+      <input_port name="description"/>
+      <input_port name="offset_z"/>
+      <input_port name="operation"/>
+      <output_port name="robot_state"/>
+    </Action>
+  </TreeNodesModel>
+
+</root>
