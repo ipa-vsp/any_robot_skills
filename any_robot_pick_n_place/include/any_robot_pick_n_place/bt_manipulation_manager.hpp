@@ -85,7 +85,7 @@ class BTManipulationManager
         BT::NodeBuilder command_gripper_builder = [](const std::string &name, const BT::NodeConfiguration &config)
         { return std::make_unique<CommandGripper>(name, config); };
         BT::NodeBuilder color_pose_estimation_builder = [](const std::string &name, const BT::NodeConfiguration &config)
-        { return std::make_unique<DetectColorNode>(name, config);};
+        { return std::make_unique<DetectColorNode>(name, config); };
 
         try
         {

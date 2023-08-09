@@ -70,11 +70,11 @@ class DetectColorNode : public BT::StatefulActionNode
         home_pose_ = config.blackboard->get<geometry_msgs::msg::Pose>("home_pose");
     }
 
-    void getPoseCallback(const color_pose_msgs::msg::ColorPose& msg)
+    void getPoseCallback(const color_pose_msgs::msg::ColorPose &msg)
     {
-      RCLCPP_INFO(node_->get_logger(), "Checking for color pose suggestion");
-      color_pose_ = msg;
-      is_new_pose = true;
+        RCLCPP_INFO(node_->get_logger(), "Checking for color pose suggestion");
+        color_pose_ = msg;
+        is_new_pose = true;
     }
 
     static BT::PortsList providedPorts()
@@ -91,19 +91,22 @@ class DetectColorNode : public BT::StatefulActionNode
     BT::NodeStatus onStart() override
     {
         RCLCPP_INFO(node_->get_logger(), "Initialising Color Detection.");
-        if(!getInput<std::string>("color").has_value())
+        if (!getInput<std::string>("color").has_value())
         {
-            RCLCPP_ERROR(node_->get_logger(), "Choose your color choise: %s", getInput<std::string>("color").error().c_str());
+            RCLCPP_ERROR(node_->get_logger(), "Choose your color choice: %s",
+                         getInput<std::string>("color").error().c_str());
             return BT::NodeStatus::FAILURE;
         }
-        if(!getInput<double>("std_pick_z").has_value() ||  getInput<std::string>("pre_z_offset"))
+        if (!getInput<double>("std_pick_z").has_value() || getInput<std::string>("pre_z_offset"))
         {
-            RCLCPP_ERROR(node_->get_logger(), "Standard pick z axis and offset positions are not set: %s", getInput<double>("std_pick_z").error().c_str());
+            RCLCPP_ERROR(node_->get_logger(), "Standard pick z axis and offset positions are not set: %s",
+                         getInput<double>("std_pick_z").error().c_str());
             return BT::NodeStatus::FAILURE;
         }
         selected_color_ = getInput<std::string>("color").value();
         sub_color_pose_ = node_->create_subscription<color_pose_msgs::msg::ColorPose>(
-            "color_pose_estimation/color_pose", 30, std::bind(&DetectColorNode::getPoseCallback, this, std::placeholders::_1));
+            "color_pose_estimation/color_pose", 30,
+            std::bind(&DetectColorNode::getPoseCallback, this, std::placeholders::_1));
         is_new_pose = false;
         rclcpp::sleep_for(std::chrono::seconds(1));
         return BT::NodeStatus::RUNNING;
@@ -113,11 +116,11 @@ class DetectColorNode : public BT::StatefulActionNode
     {
         RCLCPP_INFO(node_->get_logger(), "Initialising Color Detection.");
 
-        if(!is_new_pose)
+        if (!is_new_pose)
         {
             return BT::NodeStatus::RUNNING;
         }
-        if(color_pose_.color != selected_color_)
+        if (color_pose_.color != selected_color_)
         {
             is_new_pose = false;
             return BT::NodeStatus::RUNNING;
@@ -132,7 +135,7 @@ class DetectColorNode : public BT::StatefulActionNode
         pick_pose.pose.orientation = home_pose_.orientation;
 
         pick_pose.pose.position.z = getInput<double>("std_pick_z").value();
-        
+
         pre_pick_pose = pick_pose;
         pre_pick_pose.pose.position.z += getInput<double>("pre_z_offset").value();
 
@@ -152,7 +155,7 @@ class DetectColorNode : public BT::StatefulActionNode
             RCLCPP_ERROR(node_->get_logger(), "Could not find IK solution for pick pose.");
             return BT::NodeStatus::FAILURE;
         }
-    
+
         collision_detection::CollisionRequest collision_request;
         collision_detection::CollisionResult collision_result;
         collision_request.contacts = false;

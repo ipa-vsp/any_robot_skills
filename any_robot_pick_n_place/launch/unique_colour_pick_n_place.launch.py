@@ -44,16 +44,16 @@ def generate_launch_description():
             os.path.join(
                 get_package_share_directory("any_robot_pick_n_place"),
                 "config",
-                "unique_colour"
-                "colour_pick_n_place.yaml",
+                "unique_colour" "colour_pick_n_place.yaml",
             ),
             moveit_config.to_dict(),
-            {"behavior_tree_file": os.path.join(
-                get_package_share_directory("any_robot_pick_n_place"),
-                "config",
-                "unique_colour"
-                "colour_pick_n_place.xml",
-            )},
+            {
+                "behavior_tree_file": os.path.join(
+                    get_package_share_directory("any_robot_pick_n_place"),
+                    "config",
+                    "unique_colour" "colour_pick_n_place.xml",
+                )
+            },
         ],
     )
 
