@@ -83,7 +83,8 @@ class DetectColorNode : public BT::StatefulActionNode
             BT::InputPort<std::string>("color", "Red", "Red | Yellow | Green | Blue"),
             BT::InputPort<double>("std_pick_z", 0.02, "Standard Pick z position"),
             BT::InputPort<double>("pre_z_offset", 0.12, "Offset for pre in z-axis."),
-            BT::OutputPort<moveit::core::RobotStatePtr>("robot_state"),
+            BT::OutputPort<moveit::core::RobotStatePtr>("pre_pick_robot_state"),
+            BT::OutputPort<moveit::core::RobotStatePtr>("pick_robot_state"),
         };
     }
 
@@ -95,9 +96,9 @@ class DetectColorNode : public BT::StatefulActionNode
             RCLCPP_ERROR(node_->get_logger(), "Choose your color choise: %s", getInput<std::string>("color").error().c_str());
             return BT::NodeStatus::FAILURE;
         }
-        if(!getInput<std::string>("std_pick_z").has_value())
+        if(!getInput<double>("std_pick_z").has_value() ||  getInput<std::string>("pre_z_offset"))
         {
-            RCLCPP_ERROR(node_->get_logger(), "Standard pick z axis position: %s", getInput<double>("std_pick_z").error().c_str());
+            RCLCPP_ERROR(node_->get_logger(), "Standard pick z axis and offset positions are not set: %s", getInput<double>("std_pick_z").error().c_str());
             return BT::NodeStatus::FAILURE;
         }
         selected_color_ = getInput<std::string>("color").value();
@@ -124,7 +125,7 @@ class DetectColorNode : public BT::StatefulActionNode
         is_new_pose = false;
         RCLCPP_INFO(node_->get_logger(), "Received right color pose.");
 
-        geometry_msgs::msg::PoseStamped pick_pose;
+        geometry_msgs::msg::PoseStamped pick_pose, pre_pick_pose;
         tf2::Quaternion q;
 
         pick_pose.pose.position = color_pose_.pose.position;
@@ -132,15 +133,21 @@ class DetectColorNode : public BT::StatefulActionNode
 
         pick_pose.pose.position.z = getInput<double>("std_pick_z").value();
         
-        if(getInput<double>("pre_z_offset").has_value())
+        pre_pick_pose = pick_pose;
+        pre_pick_pose.pose.position.z += getInput<double>("pre_z_offset").value();
+
+        auto pick_robot_state = moveit_cpp_->getCurrentState();
+        auto pre_pick_robot_state = moveit_cpp_->getCurrentState();
+        auto jmg1 = pick_robot_state->getJointModelGroup(planning_goup_name_);
+        auto jmg2 = pick_robot_state->getJointModelGroup(planning_goup_name_);
+
+        if (!pick_robot_state->setFromIK(jmg1, pick_pose.pose, 10))
         {
-            pick_pose.pose.position.z += getInput<double>("pre_z_offset").value();
+            RCLCPP_ERROR(node_->get_logger(), "Could not find IK solution for pick pose.");
+            return BT::NodeStatus::FAILURE;
         }
 
-        auto robot_state = moveit_cpp_->getCurrentState();
-        auto jmg1 = robot_state->getJointModelGroup(planning_goup_name_);
-
-        if (!robot_state->setFromIK(jmg1, pick_pose.pose, 10))
+        if (!pre_pick_robot_state->setFromIK(jmg2, pre_pick_pose.pose, 10))
         {
             RCLCPP_ERROR(node_->get_logger(), "Could not find IK solution for pick pose.");
             return BT::NodeStatus::FAILURE;
@@ -155,7 +162,7 @@ class DetectColorNode : public BT::StatefulActionNode
         {
             auto planning_scene_monitor =
                 planning_scene_monitor::LockedPlanningSceneRO(moveit_cpp_->getPlanningSceneMonitor());
-            planning_scene_monitor->checkCollision(collision_request, collision_result, *robot_state);
+            planning_scene_monitor->checkCollision(collision_request, collision_result, *pick_robot_state);
         }
 
         if (collision_result.collision)
@@ -164,7 +171,20 @@ class DetectColorNode : public BT::StatefulActionNode
             return BT::NodeStatus::FAILURE;
         }
 
-        setOutput("pick_robot_state", robot_state);
+        {
+            auto planning_scene_monitor2 =
+                planning_scene_monitor::LockedPlanningSceneRO(moveit_cpp_->getPlanningSceneMonitor());
+            planning_scene_monitor2->checkCollision(collision_request, collision_result, *pre_pick_robot_state);
+        }
+
+        if (collision_result.collision)
+        {
+            RCLCPP_ERROR(node_->get_logger(), "Collision detected for pre or post pick pose.");
+            return BT::NodeStatus::FAILURE;
+        }
+
+        setOutput("pick_robot_state", pick_robot_state);
+        setOutput("pick_robot_state", pre_pick_robot_state);
         return BT::NodeStatus::SUCCESS;
     }
 
