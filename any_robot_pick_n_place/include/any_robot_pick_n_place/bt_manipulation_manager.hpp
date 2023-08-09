@@ -19,7 +19,7 @@
 #include "moveit/moveit_cpp/planning_component.h"
 #include "rclcpp/rclcpp.hpp"
 
-// #include "any_robot_pick_n_place/detect_unique_color_node.hpp"
+#include "any_robot_pick_n_place/detect_color_node.hpp"
 #include "any_robot_pick_n_place/execute_motion_node.hpp"
 #include "any_robot_pick_n_place/gripper_node.hpp"
 #include "any_robot_pick_n_place/load_parameters.hpp"
@@ -84,6 +84,8 @@ class BTManipulationManager
         { return std::make_unique<ExecuteMotionNode>(name, config); };
         BT::NodeBuilder command_gripper_builder = [](const std::string &name, const BT::NodeConfiguration &config)
         { return std::make_unique<CommandGripper>(name, config); };
+        BT::NodeBuilder color_pose_estimation_builder = [](const std::string &name, const BT::NodeConfiguration &config)
+        { return std::make_unique<DetectColorNode>(name, config);};
 
         try
         {
@@ -91,6 +93,7 @@ class BTManipulationManager
             factory_->registerBuilder<PlanMotionNode>("PlanMotion", plan_motion_builder);
             factory_->registerBuilder<ExecuteMotionNode>("ExecuteMotion", execute_motion_builder);
             factory_->registerBuilder<CommandGripper>("CommandGripper", command_gripper_builder);
+            factory_->registerBuilder<DetectColorNode>("ColorEstimation", color_pose_estimation_builder);
         }
         catch (BT::BehaviorTreeException &e)
         {
