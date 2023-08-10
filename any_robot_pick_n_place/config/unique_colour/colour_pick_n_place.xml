@@ -4,10 +4,76 @@
     <Sequence name="root_sequence">
       <Repeat num_cycles="10">
         <Sequence>
-          <ColorEstimation color="Red"
+          <SetPose description="Go Home"
+                  offset_z=""
+                  operation="Home"
+                  robot_state="{home_robot_state}"/>
+          <PlanMotion description="Plan go home"
+                  goal_state="{home_robot_state}"
+                  start_state=""
+                  next_start_state="{next_home_robot_state}"
+                  trajectory="{planed_home_trajectory}"/>
+          <ExecuteMotion description="Execute Home"
+                         trajectory="{planed_home_trajectory}"/>
+          <!-- <ColorEstimation color="Red"
+                           std_pick_z="0.90"
                            pre_z_offset="0.1"
-                           std_pick_z="0.88"
-                           robot_state="{red_pick_robot_state}"/>
+                           pre_pick_robot_state="{red_pre_pick_robot_state}"
+                           pick_robot_state="{red_pick_robot_state}"/>
+          <PlanMotion description="Plan red pick pre pose"
+                  goal_state="{red_pre_pick_robot_state}"
+                  start_state="{next_home_robot_state}"
+                  next_start_state="{next_red_pre_pick_pose_state}"
+                  trajectory="{planed_pick_pre_pose_trajectory}"/>
+          <ExecuteMotion description="Execute Pick pre pose"
+                         trajectory="{planed_red_pick_pre_pose_trajectory}"/>
+          <PlanMotion description="Plan red pick pose"
+                  goal_state="{red_pick_robot_state}"
+                  start_state="{next_red_pre_pick_pose_state}"
+                  next_start_state="{next_red_pick_pose_state}"
+                  trajectory="{planed_red_pick_pose_trajectory}"/>
+          <ExecuteMotion description="Execute Pick pose"
+                         trajectory="{planed_red_pick_pose_trajectory}"/>
+          <PlanMotion description="Plan red post pick pose"
+                  goal_state="{red_pre_pick_robot_state}"
+                  start_state="{next_red_pick_pose_state}"
+                  next_start_state="{next_red_post_pick_pose_state}"
+                  trajectory="{planed_red_post_pick_pose_trajectory}"/>
+          <ExecuteMotion description="Execute Post Pick pose"
+                         trajectory="{planed_red_post_pick_pose_trajectory}"/>
+          <SetPose description="Place pre post"
+                  offset_z="0.05"
+                  operation="Place"
+                  robot_state="{place_pre_pose_state}"/>
+          <SetPose description="Place pose"
+                  offset_z=""
+                  operation="Place"
+                  robot_state="{place_pose_state}"/>
+          <SetPose description="Place post pose"
+                  offset_z="0.05"
+                  operation="Place"
+                  robot_state="{place_post_pose_state}"/>
+          <PlanMotion description="Plan place pre pose"
+                      goal_state="{place_pre_pose_state}"
+                      start_state="{next_red_post_pick_pose_state}"
+                      next_start_state="{next_place_pre_pose_state}"
+                      trajectory="{planed_place_pre_state}"/>
+          <ExecuteMotion description="Execute Pre place pose"
+                         trajectory="{planed_place_pre_state}"/>
+          <PlanMotion description="Plan place pose"
+                      goal_state="{place_pose_state}"
+                      start_state="{next_place_pre_pose_state}"
+                      next_start_state="{next_place_pose_state}"
+                      trajectory="{planed_place_pose}"/>
+          <ExecuteMotion description="Execute place pose"
+                         trajectory="{planed_place_pose}"/>
+          <PlanMotion description="Plan place post place"
+                      goal_state="{place_post_pose_state}"
+                      start_state="{next_place_pose_state}"
+                      next_start_state="{next_place_post_pose_state}"
+                      trajectory="{planed_place_post_pose}"/>
+          <ExecuteMotion description="Execute post place pose"
+                         trajectory="{planed_place_post_pose}"/> -->
         </Sequence>
       </Repeat>
     </Sequence>
@@ -18,8 +84,29 @@
     <Action ID="ColorEstimation"
             editable="true">
       <input_port name="color"/>
-      <input_port name="pre_z_offset"/>
       <input_port name="std_pick_z"/>
+      <input_port name="pre_z_offset"/>
+      <input_port name="pre_pick_robot_state"/>
+      <inout_port name="pick_robot_state"/>
+    </Action>
+    <Action ID="PlanMotion"
+            editable="true">
+      <input_port name="description"/>
+      <input_port name="goal_state"/>
+      <input_port name="start_state"/>
+      <output_port name="next_start_state"/>
+      <output_port name="trajectory"/>
+    </Action>
+    <Action ID="ExecuteMotion"
+            editable="true">
+      <input_port name="description"/>
+      <input_port name="trajectory"/>
+    </Action>
+    <Action ID="SetPose"
+            editable="true">
+      <input_port name="description"/>
+      <input_port name="offset_z"/>
+      <input_port name="operation"/>
       <output_port name="robot_state"/>
     </Action>
   </TreeNodesModel>

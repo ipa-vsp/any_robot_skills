@@ -56,7 +56,7 @@ class BTManipulationManager
         factory_ = std::make_shared<BT::BehaviorTreeFactory>();
         node_->declare_parameter("behavior_tree_file",
                                  ament_index_cpp::get_package_share_directory("any_robot_pick_n_place") +
-                                     "/config/simple_pick_n_place.xml");
+                                     "/config/unique_colour/colour_pick_n_place.xml");
     }
 
     void start_bt()
@@ -102,6 +102,7 @@ class BTManipulationManager
         }
 
         std::string behavior_tree_file = node_->get_parameter("behavior_tree_file").as_string();
+        RCLCPP_INFO(node_->get_logger(), "      Received BT path: %s", behavior_tree_file.c_str());
         tree_ = std::make_shared<BT::Tree>(factory_->createTreeFromFile(behavior_tree_file, config_->blackboard));
 
         BT::Groot2Publisher groot_publisher(*tree_, 1667);
