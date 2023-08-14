@@ -33,7 +33,12 @@ def generate_launch_description():
         .to_moveit_configs()
     )
 
-    bt_tree_path = os.path.join(get_package_share_directory("any_robot_pick_n_place"), "config", "unique_colour", "colour_pick_n_place.xml")
+    bt_tree_path = os.path.join(
+        get_package_share_directory("any_robot_pick_n_place"),
+        "config",
+        "unique_colour",
+        "colour_pick_n_place.xml",
+    )
     point_to_point_demo = Node(
         package="any_robot_pick_n_place",
         executable="simple_pick_n_place_demo",
@@ -45,11 +50,11 @@ def generate_launch_description():
             os.path.join(
                 get_package_share_directory("any_robot_pick_n_place"),
                 "config",
-                "unique_colour", 
+                "unique_colour",
                 "colour_pick_n_place.yaml",
             ),
             moveit_config.to_dict(),
-            #{ "behavior_tree_file": bt_tree_path },
+            # { "behavior_tree_file": bt_tree_path },
         ],
     )
 
