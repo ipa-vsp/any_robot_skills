@@ -89,7 +89,8 @@ class ExecuteMotionNode : public BT::StatefulActionNode
                 auto result = exe_future_.get();
                 if (result == moveit_controller_manager::ExecutionStatus::SUCCEEDED)
                 {
-                    RCLCPP_INFO(node_->get_logger(), "Execution succeeded for %s", getInput<std::string>("description").value().c_str());
+                    RCLCPP_INFO(node_->get_logger(), "Execution succeeded for %s",
+                                getInput<std::string>("description").value().c_str());
                     return BT::NodeStatus::SUCCESS;
                 }
                 else

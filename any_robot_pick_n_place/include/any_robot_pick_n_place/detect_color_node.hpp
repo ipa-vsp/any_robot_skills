@@ -21,14 +21,14 @@
 #include <moveit/moveit_cpp/planning_component.h>
 #include <rclcpp/rclcpp.hpp>
 
+#include "tf2_eigen/tf2_eigen.hpp"
+#include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
 #include <atomic>
 #include <fstream>
 #include <iostream>
 #include <tf2/exceptions.h>
 #include <tf2_ros/buffer.h>
 #include <tf2_ros/transform_listener.h>
-#include "tf2_eigen/tf2_eigen.hpp"
-#include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
 
 #include <color_pose_msgs/msg/color_pose.hpp>
 
@@ -108,9 +108,10 @@ class DetectColorNode : public BT::StatefulActionNode
                          getInput<double>("std_pick_z").error().c_str());
             return BT::NodeStatus::FAILURE;
         }
-        if(!getInput<std::string>("color").has_value())
+        if (!getInput<std::string>("color").has_value())
         {
-            RCLCPP_ERROR(node_->get_logger(), "Color is not selected: %s", getInput<std::string>("color").error().c_str());
+            RCLCPP_ERROR(node_->get_logger(), "Color is not selected: %s",
+                         getInput<std::string>("color").error().c_str());
             return BT::NodeStatus::FAILURE;
         }
         selected_color_ = getInput<std::string>("color").value();
@@ -147,12 +148,12 @@ class DetectColorNode : public BT::StatefulActionNode
 
         moveit::core::RobotStatePtr pre_pick_robot_state, pick_robot_state;
 
-        if(proccess_poses(pre_pick_pose, "Pre Or Post Pick", pre_pick_robot_state) == BT::NodeStatus::FAILURE)
+        if (proccess_poses(pre_pick_pose, "Pre Or Post Pick", pre_pick_robot_state) == BT::NodeStatus::FAILURE)
         {
             RCLCPP_ERROR(node_->get_logger(), "Failed to process poses for pre or post pick");
             return BT::NodeStatus::FAILURE;
         }
-        if(proccess_poses(pick_pose, "Pick", pick_robot_state) == BT::NodeStatus::FAILURE)
+        if (proccess_poses(pick_pose, "Pick", pick_robot_state) == BT::NodeStatus::FAILURE)
         {
             RCLCPP_ERROR(node_->get_logger(), "Failed to process poses for pick");
             return BT::NodeStatus::FAILURE;
@@ -170,7 +171,8 @@ class DetectColorNode : public BT::StatefulActionNode
         timer_->cancel();
     }
 
-    BT::NodeStatus proccess_poses(geometry_msgs::msg::Pose pose, const std::string move_action, moveit::core::RobotStatePtr &robot_state)
+    BT::NodeStatus proccess_poses(geometry_msgs::msg::Pose pose, const std::string move_action,
+                                  moveit::core::RobotStatePtr &robot_state)
     {
         auto state = moveit_cpp_->getCurrentState();
         auto jmg = state->getJointModelGroup(planning_goup_name_);
@@ -181,8 +183,8 @@ class DetectColorNode : public BT::StatefulActionNode
 
         if (!found_ik)
         {
-            RCLCPP_ERROR(node_->get_logger(), "Could not find transform from %s to %s for %s", planning_base_frame_.c_str(),
-                         jmg->getLinkModelNames().back().c_str(), move_action.c_str());
+            RCLCPP_ERROR(node_->get_logger(), "Could not find transform from %s to %s for %s",
+                         planning_base_frame_.c_str(), jmg->getLinkModelNames().back().c_str(), move_action.c_str());
             return BT::NodeStatus::FAILURE;
         }
 
@@ -191,7 +193,8 @@ class DetectColorNode : public BT::StatefulActionNode
         // From planning frame to model frame
         target_pose = transform * target_pose;
         pose = tf2::toMsg(target_pose);
-        RCLCPP_INFO(node_->get_logger(), "%s Pose in planning frame: %s", move_action.c_str(), geometry_msgs::msg::to_yaml(pose).c_str());
+        RCLCPP_INFO(node_->get_logger(), "%s Pose in planning frame: %s", move_action.c_str(),
+                    geometry_msgs::msg::to_yaml(pose).c_str());
 
         if (!state->setFromIK(jmg, target_pose, planning_end_effector_frame_))
         {
@@ -219,7 +222,7 @@ class DetectColorNode : public BT::StatefulActionNode
         }
         robot_state = state;
         return BT::NodeStatus::SUCCESS;
-    }    
+    }
 };
 
 #endif // DETECT_COLOR_NODE_HPP
