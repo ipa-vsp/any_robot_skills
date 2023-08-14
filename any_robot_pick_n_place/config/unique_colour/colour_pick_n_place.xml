@@ -15,12 +15,12 @@
                   trajectory="{planed_home_trajectory}"/>
           <ExecuteMotion description="Execute Home"
                          trajectory="{planed_home_trajectory}"/>
-          <!-- <ColorEstimation color="Red"
+          <ColorEstimation color="Red"
                            std_pick_z="0.90"
                            pre_z_offset="0.1"
                            pre_pick_robot_state="{red_pre_pick_robot_state}"
                            pick_robot_state="{red_pick_robot_state}"/>
-          <PlanMotion description="Plan red pick pre pose"
+          <!-- <PlanMotion description="Plan red pick pre pose"
                   goal_state="{red_pre_pick_robot_state}"
                   start_state="{next_home_robot_state}"
                   next_start_state="{next_red_pre_pick_pose_state}"
