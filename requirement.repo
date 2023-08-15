@@ -1,5 +1,0 @@
-repositories:
-   color_pose_estimation:
-    type: git
-    url: https://github.com/ipa-vsp/color_pose_estimation.git
-    version: main

@@ -19,7 +19,7 @@
 #include "moveit/moveit_cpp/planning_component.h"
 #include "rclcpp/rclcpp.hpp"
 
-// #include "any_robot_pick_n_place/detect_unique_color_node.hpp"
+#include "any_robot_pick_n_place/detect_color_node.hpp"
 #include "any_robot_pick_n_place/execute_motion_node.hpp"
 #include "any_robot_pick_n_place/gripper_node.hpp"
 #include "any_robot_pick_n_place/load_parameters.hpp"
@@ -56,7 +56,7 @@ class BTManipulationManager
         factory_ = std::make_shared<BT::BehaviorTreeFactory>();
         node_->declare_parameter("behavior_tree_file",
                                  ament_index_cpp::get_package_share_directory("any_robot_pick_n_place") +
-                                     "/config/simple_pick_n_place.xml");
+                                     "/config/unique_colour/colour_pick_n_place.xml");
     }
 
     void start_bt()
@@ -84,6 +84,8 @@ class BTManipulationManager
         { return std::make_unique<ExecuteMotionNode>(name, config); };
         BT::NodeBuilder command_gripper_builder = [](const std::string &name, const BT::NodeConfiguration &config)
         { return std::make_unique<CommandGripper>(name, config); };
+        BT::NodeBuilder color_pose_estimation_builder = [](const std::string &name, const BT::NodeConfiguration &config)
+        { return std::make_unique<DetectColorNode>(name, config); };
 
         try
         {
@@ -91,6 +93,7 @@ class BTManipulationManager
             factory_->registerBuilder<PlanMotionNode>("PlanMotion", plan_motion_builder);
             factory_->registerBuilder<ExecuteMotionNode>("ExecuteMotion", execute_motion_builder);
             factory_->registerBuilder<CommandGripper>("CommandGripper", command_gripper_builder);
+            factory_->registerBuilder<DetectColorNode>("ColorEstimation", color_pose_estimation_builder);
         }
         catch (BT::BehaviorTreeException &e)
         {
@@ -99,6 +102,7 @@ class BTManipulationManager
         }
 
         std::string behavior_tree_file = node_->get_parameter("behavior_tree_file").as_string();
+        RCLCPP_INFO(node_->get_logger(), "      Received BT path: %s", behavior_tree_file.c_str());
         tree_ = std::make_shared<BT::Tree>(factory_->createTreeFromFile(behavior_tree_file, config_->blackboard));
 
         BT::Groot2Publisher groot_publisher(*tree_, 1667);

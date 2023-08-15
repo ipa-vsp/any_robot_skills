@@ -13,6 +13,7 @@ find_package(rclcpp_components REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(control_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(color_pose_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(moveit REQUIRED)
@@ -28,6 +29,7 @@ set(dependencies
   sensor_msgs
   control_msgs
   geometry_msgs
+  color_pose_msgs
   tf2_ros
   tf2_geometry_msgs
   rosparam_shortcuts

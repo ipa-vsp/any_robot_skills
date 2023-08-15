@@ -4,7 +4,7 @@ simple_pick_n_place:
     planning_frame: "world"
     moveing_link: "prbt_tool0"
     gripper_action: "/gripper_command"
-    # home_pose: [-0.022, -0.010, 1.147, -3.140, 0.000, 1.567]
+    home_pose: [-0.022, -0.010, 1.147, -3.140, 0.000, -1.57]
     pick_pose: [-0.144, -0.080, 0.865, -3.14, 0.00, -1.57]
     place_pose: [-0.144, 0.121, 0.870, -3.14, 0.00, -1.57]
     compute_path_moveitcpp_skill:
