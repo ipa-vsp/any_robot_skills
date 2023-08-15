@@ -15,7 +15,7 @@
                   trajectory="{planed_home_trajectory}"/>
           <ExecuteMotion description="Execute Home"
                          trajectory="{planed_home_trajectory}"/>
-          <ColorEstimation color="Red"
+          <ColorEstimation color="Red_holder"
                            std_pick_z="0.90"
                            pre_z_offset="0.1"
                            pre_pick_robot_state="{red_pre_post_pick_robot_state}"
@@ -27,7 +27,7 @@
                   trajectory="{planed_red_pick_pre_pose_trajectory}"/>
           <ExecuteMotion description="Execute Pick pre pose"
                          trajectory="{planed_red_pick_pre_pose_trajectory}"/>
-          <!-- <CommandGripper description="Open"
+          <CommandGripper description="Open"
                           is_open="true"/>
           <PlanMotion description="Plan red pick pose"
                   goal_state="{red_pick_robot_state}"
@@ -79,7 +79,7 @@
                       next_start_state="{next_place_post_pose_state}"
                       trajectory="{planed_place_post_pose}"/>
           <ExecuteMotion description="Execute post place pose"
-                         trajectory="{planed_place_post_pose}"/> -->
+                         trajectory="{planed_place_post_pose}"/>
         </Sequence>
       </Repeat>
     </Sequence>

@@ -138,8 +138,7 @@ class DetectColorNode : public BT::StatefulActionNode
         geometry_msgs::msg::Pose pick_pose, pre_pick_pose;
         tf2::Quaternion q;
 
-        pick_pose.position.x = -0.144;
-        pick_pose.position.y = -0.080; // color_pose_.pose.position;
+        pick_pose.position = color_pose_.pose.position;
         pick_pose.position.z = getInput<double>("std_pick_z").value();
         pick_pose.orientation = home_pose_.orientation; // Todo: Currently fixed orientation remove this in the future
 
@@ -159,7 +158,7 @@ class DetectColorNode : public BT::StatefulActionNode
             return BT::NodeStatus::FAILURE;
         }
 
-        setOutput("pick_robot_state", pre_pick_robot_state);
+        setOutput("pre_pick_robot_state", pre_pick_robot_state);
         setOutput("pick_robot_state", pick_robot_state);
         return BT::NodeStatus::SUCCESS;
     }
